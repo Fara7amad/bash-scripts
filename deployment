@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Set up logging
+LOGFILE="install_$(date +%Y%m%d).log"
+exec &> >(tee -a "$LOGFILE")
+
+# Install git
+apt-get update
+apt-get install -y git
+# Install curl
+apt-get install curl
+# Clone website code and config file
+git clone https://github.com/mkassaf/SimpleApacheApp.git
+cd SimpleApacheApp
+
+# Install Apache2 if not already installed
+if ! command -v apache2 &> /dev/null
+then
+    apt-get install -y apache2
+fi
+
+# Remove old Apache if version is less than 2.xx
+apache_version=$(apache2 -v | grep -oP "Apache/\K([0-9]+)\.([0-9]+)\.([0-9]+)")
+if [ $apache_version -lt 2 ]
+then
+    apt-get remove -y apache2
+    apt-get install -y apache2
+fi
+
+# Move website pages to /var/www/SimpleApp
+mkdir -p /var/www/SimpleApp
+cp -r App/* /var/www/SimpleApp/
+
+# Move config file to /etc/apache2/sites-available
+cp simpleApp.conf /etc/apache2/sites-available/
+
+# Disable default Apache config and enable new config
+a2dissite 000-default
+a2ensite simpleApp.conf
+systemctl restart apache2
+
+# Verify installation
+curl -s -I http://localhost | head -n 1 | grep -q "200\|301\|302"
+if [ $? -eq 0 ]
+then
+    echo "Installation successful"
+else
+    echo "Installation failed"
+fi
+
+# Set up daily cron job to update website
+(crontab -l ; echo "0 0 * * * cd /root/SimpleApacheApp && git pull") | crontab -
