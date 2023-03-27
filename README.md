@@ -1,5 +1,6 @@
 # bash-scripts
 ## LunixStatus
+
 This script provides the following functionalities:
 a. A welcome screen showing the current date, current user, Linux version,
 and a list of options which are:
@@ -54,5 +55,5 @@ ls
 Now you can run the script as a command by just typing the name of the file.
 
 
-##Deployment
+## Deployment
 This script deploys a static web application from a fixed github repo link. It will install git, curl, and latest apaache2 version, then it deploys the website and add the script to the cronJob to be run daily at midnight to fetch the latest code from the GitHub rep and update the website. The script also logs all steps, and store the logs in a file called _install_{current date}.log_.
