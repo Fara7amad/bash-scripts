@@ -1,0 +1,145 @@
+#!/bin/bash
+
+# Function to display welcome screen
+welcome_screen() {
+    clear
+    echo "=============================="
+    echo "      Welcome to LunixStatus  "
+    echo "=============================="
+    echo "Current Date: $(date)"
+    echo "Current User: $USER"
+    echo "Linux Version: $(uname -r)"
+    echo ""
+    echo "Please select an option:"
+    echo "1. List the running processes"
+    echo "2. Check the memory status and free memory in the RAM"
+    echo "3. Check the hard disk status and free memory in the HDD"
+    echo "4. Check if Apache is installed and its version"
+    echo "5. Exit"
+}
+
+# Function to display options for a selected menu item
+display_options() {
+    local option=$1
+    case $option in
+        1)
+            echo "=============================="
+            echo "      Running Processes       "
+            echo "=============================="
+            ps -e
+            ;;
+        2)
+            echo "=============================="
+            echo "   Memory and Free Memory     "
+            echo "=============================="
+            free -m
+            ;;
+        3)
+            echo "=============================="
+            echo "   Hard Disk and Free Space    "
+            echo "=============================="
+            df -h
+            ;;
+        4)
+            echo "=============================="
+            echo "         Apache Version        "
+            echo "=============================="
+            if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+                echo "Apache is installed"
+                echo "Version: $(apache2 -v | grep "version" | awk '{print $3}')"
+            else
+                echo "Apache is not installed"
+            fi
+            ;;
+        5)
+           exit
+           ;;
+        *)
+            echo "Invalid option"
+            ;;
+    esac
+}
+
+# Function to display options after executing a selected option
+display_submenu() {
+    local option=$1
+    while true
+    do
+        echo ""
+        echo "Please select an option:"
+        echo "1. Back to main menu"
+        echo "2. Re-execute option $option"
+        echo "3. Exit"
+        read submenu_option
+        case $submenu_option in
+            1)
+                welcome_screen
+                break ;;
+            2)
+                display_options $option ;;
+            3)
+                exit ;;
+            *)
+                echo "Invalid option"
+                ;;
+        esac
+    done
+}
+
+# Function to handle command line arguments
+handle_arguments() {
+  while [ "$1" != "" ]; do
+    case $1 in
+      "p" )
+            echo "=============================="
+            echo "      Running Processes       "
+            echo "=============================="
+            ps -e
+        ;;
+      "r" )
+            echo "=============================="
+            echo "   Memory and Free Memory     "
+            echo "=============================="
+            free -m
+        ;;
+      "h" )
+            echo "=============================="
+            echo "   Hard Disk and Free Space    "
+            echo "=============================="
+            df -h
+        ;;
+      "a" )
+           echo "=============================="
+            echo "         Apache Version        "
+            echo "=============================="
+            if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+                echo "Apache is installed"
+                echo "Version: $(apache2 -v | grep "version" | awk '{print $3}')"
+            else
+                echo "Apache is not installed"
+            fi
+        ;;
+      * )
+        echo "Invalid argument: $1"
+        exit 1
+        ;;
+    esac
+    shift
+  done
+exit
+}
+
+if [ $# -gt 0 ]; then
+handle_arguments $@
+fi
+# Main function
+main() {
+    welcome_screen
+    while true
+    do
+        read option
+        display_options $option
+        display_submenu $option
+    done
+}
+main
