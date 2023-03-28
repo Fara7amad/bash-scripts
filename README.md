@@ -37,9 +37,10 @@ chmod +x LunixStatus.sh
 ```
 or
 ```shell
-bash LumixStatus.sh
+bash LunixStatus.sh
 ```
-**Additional step:** You can run the script as a command by adding it to Linux PATH:
+**Additional step:** 
+You can run the script as a command by adding it to Linux PATH:
 Move the shell script to a directory that is already in your PATH
 You can move the shell script into any of the directories which are listed in response to the ```echo $PATH``` command. The best practice is to put your personal shell scripts into the /usr/local/bin directory:
 ```shell
@@ -55,4 +56,14 @@ Now you can run the script as a command by just typing the name of the file.
 
 ## Deployment
 ----------------------------------------------------
-This script deploys a static web application from a fixed github repo link. It will install git, curl, and latest apaache2 version, then it deploys the website and add the script to the cronJob to be run daily at midnight to fetch the latest code from the GitHub rep and update the website. The script also logs all steps, and store the logs in a file called _install_{current date}.log_.
+This script deploys a static web application from a fixed github repo link. It will install git, curl, and latest apaache2 version, then it deploys the website and add the script to the cronJob to be run daily at midnight to fetch the latest code from the GitHub rep and update the website. 
+
+The script also logs all steps, and store the logs in a file called _install_{current date}.log_.
+
+The cron job has been added by:
+```shell
+(crontab -l ; echo "0 0 * * * cd /root/SimpleApacheApp && git pull") | crontab -
+```
+The syntax ```crontab -l``` is used to list the current cron jobs for the user. ```echo "0 0 * * * cd /root/SimpleApacheApp && git pull"``` adds a new cron job to the existing list of cron jobs, which is to run the command ```"cd /root/SimpleApacheApp && git pull"``` at midnight every day "(0 0 * * *)".
+
+The | operator is used to redirect the output of the first command ```crontab -l``` to the input of the second command ```echo "0 0 * * * cd /root/SimpleApacheApp && git pull"``` using a pipe. Finally, the ```| crontab -``` command saves the new cron job list to the user's crontab file.
