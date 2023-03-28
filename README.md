@@ -67,3 +67,9 @@ The cron job has been added by:
 The syntax ```crontab -l``` is used to list the current cron jobs for the user. ```echo "0 0 * * * cd /root/SimpleApacheApp && git pull"``` adds a new cron job to the existing list of cron jobs, which is to run the command ```"cd /root/SimpleApacheApp && git pull"``` at midnight every day "(0 0 * * *)".
 
 The | operator is used to redirect the output of the first command ```crontab -l``` to the input of the second command ```echo "0 0 * * * cd /root/SimpleApacheApp && git pull"``` using a pipe. Finally, the ```| crontab -``` command saves the new cron job list to the user's crontab file.
+
+To test that the script worked successfully, you can use the ```curl``` command or by visiting the website itself:
+```shell
+ hostname -I
+```
+The output will be the server's ip.
